@@ -365,6 +365,43 @@ const updateUser = async (req, res, next) => {
   }
 }
 
+const deleteUser = async (req, res, next) => {
+  try {
+    // Get user ID from JWT authentication middleware
+    const userId = req.user.id;
+
+    // Find the user in the database
+    const user = await User.findById(userId);
+
+    // If user is not found
+    if (!user) {
+      return next(new AppError("User not found 🙄", 400));
+    }
+
+    // If the user has an avatar, delete it from Cloudinary
+    if (user.avatar && user.avatar.public_id) {
+      try {
+        await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+      } catch (error) {
+        console.log("Error deleting avatar from Cloudinary:", error.message);
+      }
+    }
+
+    // Delete the user from the database
+    await user.deleteOne();
+
+    // Send success response
+    res.status(200).json({
+      success: true,
+      message: "User account has been deleted successfully 😢",
+    });
+  } catch (error) {
+    console.log(error.message);
+    return next(new AppError("Internal Server Error", 500));
+  }
+};
+
+
 export {
   register,
   login,
@@ -373,5 +410,6 @@ export {
   forgotPassword,
   resetPassword,
   changePassword,
-  updateUser
+  updateUser,
+  deleteUser
 };

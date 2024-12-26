@@ -1,5 +1,5 @@
 import  {Router } from "express";
-import { changePassword, forgotPassword, getUser, login, logout, register, resetPassword, updateUser } from "../Controllers/user.controller.js";
+import { changePassword, deleteUser, forgotPassword, getUser, login, logout, register, resetPassword, updateUser } from "../Controllers/user.controller.js";
 import upload from "../Middlewares/multer.middleware.js";
 import {isLoggedIn} from "../Middlewares/auth.middleware.js";
 
@@ -7,6 +7,7 @@ const userRouter = Router();
 
 //get the user data
 userRouter.get ('/logout', isLoggedIn, logout)
+userRouter.get ('/delete', isLoggedIn, deleteUser)
 userRouter.get ('/user',  isLoggedIn, getUser)
 
 //post routes for create user or login user
